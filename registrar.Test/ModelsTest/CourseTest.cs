@@ -28,6 +28,17 @@ namespace Registrar.Tests
         }
 
         [TestMethod]
+        public void Save_AssignsIdToObject_id()
+        {
+            Course testCourse = new Course("History of the World", "HIST101");
+            testCourse.Save();
+            Course savedCourse = Course.GetAll()[0];
+            int result = savedCourse.GetId();
+            int testId = testCourse.GetId();
+            Assert.AreEqual(testId, result);
+        }
+
+        [TestMethod]
         public void Save_CourseSavesToDatabase_CourseList()
         {
             Course testCourse = new Course("History of the World", "HIST101");
@@ -37,5 +48,27 @@ namespace Registrar.Tests
             CollectionAssert.AreEqual(testList, result);
         }
 
+        [TestMethod]
+        public void Find_FindsCourseInDatabase_Course()
+        {
+            Course testCourse = new Course("History of the World", "HIST101");
+            testCourse.Save();
+            Course result = Course.Find(testCourse.GetId());
+            Assert.AreEqual(testCourse, result);
+        }
+
+        [TestMethod]
+        public void AddStudent_AddsStudentToCourse_StudentList()
+        {
+            DateTime dt = new DateTime(2008, 3, 9, 16, 5, 7);
+            Student testStudent = new Student("Joe Green", dt);
+            testStudent.Save();
+            Course testCourse = new Course("History of the World", "HIST101");
+            testCourse.Save();
+            testCourse.AddStudent(testStudent);
+            List<Student> result = testCourse.GetStudents();
+            List<Student> testList = new List<Student>{testStudent};
+            CollectionAssert.AreEqual(testList, result);
+        }
     }
 }
