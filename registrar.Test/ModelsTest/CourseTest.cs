@@ -7,9 +7,9 @@ using Registrar.Models;
 namespace Registrar.Tests
 {
     [TestClass]
-    public class StudentTest : IDisposable
+    public class CourseTest : IDisposable
     {
-        public StudentTest()
+        public CourseTest()
         {
             DBConfiguration.ConnectionString = "server=localhost;user id=root;password=root;port=8889;database=regist_test;";
         }
@@ -20,11 +20,11 @@ namespace Registrar.Tests
         }
 
         [TestMethod]
-        public void Equals_TrueForSameDescription_Item()
+        public void Equals_TrueForSame_Item()
         {
-            Student firstStudent = new Student("Joe Green", "2008-11-11");
-            Student secondStudent = new Student("Joe Green", "2008-11-11");
-            Assert.AreEqual(firstStudent, secondStudent);
+            Course firstCourse = new Course("History of the World", "HIST101");
+            Course secondCourse = new Course("History of the World", "HIST101");
+            Assert.AreEqual(firstCourse, secondCourse);
         }
     }
 }
