@@ -17,6 +17,7 @@ namespace Registrar.Tests
         {
             Student.DeleteAll();
             Course.DeleteAll();
+            Department.DeleteAll();
         }
 
         [TestMethod]
@@ -68,6 +69,18 @@ namespace Registrar.Tests
             testCourse.AddStudent(testStudent);
             List<Student> result = testCourse.GetStudents();
             List<Student> testList = new List<Student>{testStudent};
+            CollectionAssert.AreEqual(testList, result);
+        }
+        [TestMethod]
+        public void AddDepartment_AddsDepartmentToCourse_DepartmentList()
+        {
+            Department testDepartment = new Department("History");
+            testDepartment.Save();
+            Course testCourse = new Course("History of the World", "HIST101");
+            testCourse.Save();
+            testCourse.AddDepartment(testDepartment);
+            List<Department> result = testCourse.GetDepartments();
+            List<Department> testList = new List<Department>{testDepartment};
             CollectionAssert.AreEqual(testList, result);
         }
     }
