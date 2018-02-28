@@ -75,6 +75,7 @@ namespace Registrar.Tests
             List<Course> testList = new List<Course>{testCourse};
             CollectionAssert.AreEqual(testList, result);
         }
+
         [TestMethod]
         public void AddDepartment_AddsDepartmentToStudent_DepartmentList()
         {
@@ -87,6 +88,40 @@ namespace Registrar.Tests
             List<Department> result = testStudent.GetDepartments();
             List<Department> testList = new List<Department>{testDepartment};
             CollectionAssert.AreEqual(testList, result);
+        }
+
+        [TestMethod]
+        public void Edit_EditChangesStudent_Student()
+        {
+            DateTime dt = new DateTime(2008, 3, 9, 16, 5, 7);
+            Student testStudent = new Student("Joe Green", dt);
+            testStudent.Save();
+            DateTime dt2 = new DateTime(2000, 1, 2, 3, 4, 5);
+            testStudent.Edit("Eric Cartman", dt2);
+            Student result = Student.Find(testStudent.GetId());
+            Assert.AreEqual("Eric Cartman", result.GetName());
+            Assert.AreEqual(dt2, result.GetEnrollmentDate());
+        }
+
+        [TestMethod]
+        public void Delete_DeletesStudentAssociationsFromDatabase_StudentList()
+        {
+            DateTime dt = new DateTime(2008, 3, 9, 16, 5, 7);
+            Student testStudent = new Student("Joe Green", dt);
+            testStudent.Save();
+            Department testDepartment = new Department("History");
+            testDepartment.Save();
+            Course testCourse = new Course("History of the World", "HIST101");
+            testCourse.Save();
+            testStudent.AddCourse(testCourse);
+            testStudent.AddDepartment(testDepartment);
+            testStudent.Delete();
+            List<Student> resultDepartmentStudents = testDepartment.GetStudents();
+            List<Student> resultCourseStudents = testCourse.GetStudents();
+            List<Student> testDepartmentStudents = new List<Student> {};
+            List<Student> testCourseStudents = new List<Student> {};
+            CollectionAssert.AreEqual(testDepartmentStudents, resultDepartmentStudents);
+            CollectionAssert.AreEqual(testCourseStudents, resultCourseStudents);
         }
     }
 }

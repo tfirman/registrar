@@ -66,6 +66,7 @@ namespace Registrar.Models
                 conn.Dispose();
             }
         }
+
         public void Save()
         {
             MySqlConnection conn = DB.Connection();
@@ -87,6 +88,53 @@ namespace Registrar.Models
             {
                 conn.Dispose();
             }
+        }
+
+        public void Edit(string newName)
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"UPDATE departments SET name = @newName WHERE id = @searchId;";
+
+            MySqlParameter searchId = new MySqlParameter();
+            searchId.ParameterName = "@searchId";
+            searchId.Value = _id;
+            cmd.Parameters.Add(searchId);
+            MySqlParameter name = new MySqlParameter();
+            name.ParameterName = "@newName";
+            name.Value = newName;
+            cmd.Parameters.Add(name);
+
+            cmd.ExecuteNonQuery();
+            _name = newName;
+
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+        }
+
+        public void Delete()
+        {
+          MySqlConnection conn = DB.Connection();
+          conn.Open();
+          var cmd = conn.CreateCommand() as MySqlCommand;
+          cmd.CommandText = @"DELETE FROM departments WHERE id = @DepartmentId;
+              DELETE FROM departments_courses WHERE department_id = @DepartmentId;
+              DELETE FROM departments_students WHERE department_id = @DepartmentId;";
+
+          MySqlParameter departmentIdParameter = new MySqlParameter();
+          departmentIdParameter.ParameterName = "@DepartmentId";
+          departmentIdParameter.Value = this.GetId();
+          cmd.Parameters.Add(departmentIdParameter);
+
+          cmd.ExecuteNonQuery();
+          if (conn != null)
+          {
+            conn.Close();
+          }
         }
 
         public static List<Department> GetAll()

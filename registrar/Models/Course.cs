@@ -73,6 +73,7 @@ namespace Registrar.Models
                 conn.Dispose();
             }
         }
+
         public void Save()
         {
             MySqlConnection conn = DB.Connection();
@@ -99,6 +100,58 @@ namespace Registrar.Models
             {
                 conn.Dispose();
             }
+        }
+
+        public void Edit(string newName, string newCourseNum)
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"UPDATE courses SET name = @newName, coursenum = @newCourseNum WHERE id = @searchId;";
+
+            MySqlParameter searchId = new MySqlParameter();
+            searchId.ParameterName = "@searchId";
+            searchId.Value = _id;
+            cmd.Parameters.Add(searchId);
+            MySqlParameter name = new MySqlParameter();
+            name.ParameterName = "@newName";
+            name.Value = newName;
+            cmd.Parameters.Add(name);
+            MySqlParameter coursenum = new MySqlParameter();
+            coursenum.ParameterName = "@newCourseNum";
+            coursenum.Value = newCourseNum;
+            cmd.Parameters.Add(coursenum);
+
+            cmd.ExecuteNonQuery();
+            _courseNum = newCourseNum;
+            _name = newName;
+
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+        }
+
+        public void Delete()
+        {
+          MySqlConnection conn = DB.Connection();
+          conn.Open();
+          var cmd = conn.CreateCommand() as MySqlCommand;
+          cmd.CommandText = @"DELETE FROM courses WHERE id = @CourseId;
+              DELETE FROM courses_students WHERE course_id = @CourseId;
+              DELETE FROM departments_courses WHERE course_id = @CourseId;";
+
+          MySqlParameter courseIdParameter = new MySqlParameter();
+          courseIdParameter.ParameterName = "@CourseId";
+          courseIdParameter.Value = this.GetId();
+          cmd.Parameters.Add(courseIdParameter);
+
+          cmd.ExecuteNonQuery();
+          if (conn != null)
+          {
+            conn.Close();
+          }
         }
 
         public static List<Course> GetAll()

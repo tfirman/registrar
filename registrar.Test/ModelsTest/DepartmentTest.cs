@@ -84,5 +84,36 @@ namespace Registrar.Tests
             List<Course> testList = new List<Course>{testCourse};
             CollectionAssert.AreEqual(testList, result);
         }
+
+        [TestMethod]
+        public void Edit_EditChangesDepartment_Department()
+        {
+            Department testDepartment = new Department("History");
+            testDepartment.Save();
+            testDepartment.Edit("Chemistry");
+            Department result = Department.Find(testDepartment.GetId());
+            Assert.AreEqual("Chemistry", result.GetName());
+        }
+
+        [TestMethod]
+        public void Delete_DeletesDepartmentAssociationsFromDatabase_DepartmentList()
+        {
+            DateTime dt = new DateTime(2008, 3, 9, 16, 5, 7);
+            Student testStudent = new Student("Joe Green", dt);
+            testStudent.Save();
+            Department testDepartment = new Department("History");
+            testDepartment.Save();
+            Course testCourse = new Course("History of the World", "HIST101");
+            testCourse.Save();
+            testDepartment.AddStudent(testStudent);
+            testDepartment.AddCourse(testCourse);
+            testDepartment.Delete();
+            List<Department> resultCourseDepartments = testCourse.GetDepartments();
+            List<Department> resultStudentDepartments = testStudent.GetDepartments();
+            List<Department> testCourseDepartments = new List<Department> {};
+            List<Department> testStudentDepartments = new List<Department> {};
+            CollectionAssert.AreEqual(testCourseDepartments, resultCourseDepartments);
+            CollectionAssert.AreEqual(testStudentDepartments, resultStudentDepartments);
+        }
     }
 }

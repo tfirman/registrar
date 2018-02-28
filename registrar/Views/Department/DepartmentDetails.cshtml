@@ -1,0 +1,42 @@
+@using Registrar.Models
+<h1>@Model.GetName()</h1>
+<form action="/department/@Model.GetId()/update" method="post">
+  <label for="new-name">Change this department name to:</label>
+  <input type="text" name="new-name" value="@Model.GetName()">
+  <button type="submit">Edit</button>
+</form>
+<h4> This department offers the following courses: </h4>
+@foreach(var course in Model.GetCourses())
+{
+  <p>@course.GetName() | <a href="/course/@course.GetId()">View this course</a></p>
+}
+<form action="/department/@Model.GetId()/addcourse" method="post">
+  <label for="name">Add a Course:</label>
+  <select class="form-control" id="newcourse" name="newcourse">
+    @foreach(var allcourse in Course.GetAll())
+    {
+      <option value="@allcourse.GetId()">@allcourse.GetName()</option>
+    }
+  </select>
+  <button type="submit">Add this course to this department</button>
+</form>
+<h4> The following students are members of this department: </h4>
+@foreach(var student in Model.GetStudents())
+{
+  <p>@student.GetName() | <a href="/student/@student.GetId()">View this student</a></p>
+}
+<form action="/department/@Model.GetId()/addstudent" method="post">
+  <label for="name">Add a Student:</label>
+  <select class="form-control" id="newstudent" name="newstudent">
+    @foreach(var allstudent in Student.GetAll())
+    {
+      <option value="@allstudent.GetId()">@allstudent.GetName()</option>
+    }
+  </select>
+  <button type="submit">Add this student to this department</button>
+</form>
+
+<form action="/department/@Model.GetId()/delete" method="post">
+    <button type="submit">Delete this department</button>
+</form>
+<h4><a href="/department">Back to department list</a></h4>

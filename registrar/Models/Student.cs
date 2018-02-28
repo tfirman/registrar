@@ -103,6 +103,60 @@ namespace Registrar.Models
             }
         }
 
+        public void Edit(string newName, DateTime newEnrollmentDate)
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"UPDATE students SET name = @newName, enrollmentdate = @newEnrollmentDate WHERE id = @searchId;";
+
+            MySqlParameter searchId = new MySqlParameter();
+            searchId.ParameterName = "@searchId";
+            searchId.Value = _id;
+            cmd.Parameters.Add(searchId);
+            MySqlParameter name = new MySqlParameter();
+            name.ParameterName = "@newName";
+            name.Value = newName;
+            cmd.Parameters.Add(name);
+
+            MySqlParameter enrolldate = new MySqlParameter();
+            enrolldate.ParameterName = "@newEnrollmentDate";
+            enrolldate.Value = newEnrollmentDate;
+            enrolldate.MySqlDbType = MySqlDbType.DateTime;
+            cmd.Parameters.Add(enrolldate);
+
+            cmd.ExecuteNonQuery();
+            _enrollmentDate = newEnrollmentDate;
+            _name = newName;
+
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+        }
+
+        public void Delete()
+        {
+          MySqlConnection conn = DB.Connection();
+          conn.Open();
+          var cmd = conn.CreateCommand() as MySqlCommand;
+          cmd.CommandText = @"DELETE FROM students WHERE id = @StudentId;
+              DELETE FROM courses_students WHERE student_id = @StudentId;
+              DELETE FROM departments_students WHERE student_id = @StudentId;";
+
+          MySqlParameter courseIdParameter = new MySqlParameter();
+          courseIdParameter.ParameterName = "@StudentId";
+          courseIdParameter.Value = this.GetId();
+          cmd.Parameters.Add(courseIdParameter);
+
+          cmd.ExecuteNonQuery();
+          if (conn != null)
+          {
+            conn.Close();
+          }
+        }
+
         public static List<Student> GetAll()
         {
             List<Student> allStudents = new List<Student> {};

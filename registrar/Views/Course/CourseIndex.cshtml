@@ -1,0 +1,13 @@
+@using Registrar.Models
+<h1>University Registrar: The Courses</h1>
+<ul>
+  @foreach(var course in Model)
+  {
+        <h4>@course.GetName() | <a href="/course/@course.GetId()">View this course in detail</a></h4>
+  }
+</ul>
+<p><a href="/course/new">Add another course</a></p>
+<p><a href="/">Go back to main menu</a></p>
+<form action="/course/delete" method="post">
+  <button type="submit" name="button">Clear All Courses</button>
+</form>
