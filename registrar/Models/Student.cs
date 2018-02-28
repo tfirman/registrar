@@ -219,5 +219,64 @@ namespace Registrar.Models
             }
             return courses;
         }
+        public void AddDepartment(Department newDepartment)
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"INSERT INTO departments_students (department_id, student_id) VALUES (@DepartmentId, @StudentId);";
+
+            MySqlParameter department_id = new MySqlParameter();
+            department_id.ParameterName = "@DepartmentId";
+            department_id.Value = newDepartment.GetId();
+            cmd.Parameters.Add(department_id);
+
+            MySqlParameter student_id = new MySqlParameter();
+            student_id.ParameterName = "@StudentId";
+            student_id.Value = _id;
+            cmd.Parameters.Add(student_id);
+
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+        }
+
+        public List<Department> GetDepartments()
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT departments.* FROM students
+                JOIN departments_students ON (students.id = departments_students.student_id)
+                JOIN departments ON (departments_students.department_id = departments.id)
+                WHERE students.id = @StudentId;";
+
+            MySqlParameter StudentIdParameter = new MySqlParameter();
+            StudentIdParameter.ParameterName = "@StudentId";
+            StudentIdParameter.Value = _id;
+            cmd.Parameters.Add(StudentIdParameter);
+
+            MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+
+            List<Department> departments = new List<Department> {};
+
+            while(rdr.Read())
+            {
+                int newid = rdr.GetInt32(0);
+                string name = rdr.GetString(1);
+                Department foundDepartment = new Department(name, newid);
+                departments.Add(foundDepartment);
+            }
+
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+            return departments;
+        }
     }
 }
